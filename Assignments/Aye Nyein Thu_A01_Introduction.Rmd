@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Aye Nyein Thu"
 output: pdf_document
 ---
 
@@ -22,22 +22,22 @@ Enter answers to the questions just below the >Answer: prompt.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I have used SPSS and Gretl for my online Master thesis in early 2024. I have received an introductory R/ R-Studio course training in 2024. But, I don't know Git/ GitHub before and have no prior knowledge on it.  
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: As I have learned basic R before, I am a bit familiar with it. However, I could not say that I am a proficient user. But, I would like to learn as possible as I can. 
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I am a bit anxious about GitHub, but I am happy to learn. 
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository and that you have updated your course README file, committed those changes, and pushed them to your GitHub account. 
 
-> Answer: 
+> Answer: https://github.com/ayenyein-thu/EDE_Fall2024
 
 ## 3) Knitting
 When you have completed this document, click the `knit` button.This should produce a PDF copy of your markdown document. Submit this PDF to Canvas 
