@@ -1,10 +1,10 @@
 ---
-title: '3: Data Exploration'
+title: "3: Data Exploration"
 author: "Environmental Data Analytics | John Fay & Luana Lima"
 date: "Fall 2024"
-output:
-  word_document: default
-  pdf_document: default
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Lesson Objectives
@@ -27,10 +27,19 @@ Why is data exploration our first step in analyzing a dataset? What information 
 ```{r, Setup-Import-Explore, message = FALSE}
 ## -Set up-
 # 1. Load packages (tidyverse, here)
+library(tidyverse)
+library(here)
 
 # 2. Check the working directory
+getwd()
+here()
 
 # 3. Import datasets
+USGS.flow.data <- read.csv(
+  file=here('./Data/Processed/USGS_Site02085000_Flow_Processed.csv'), 
+  stringsAsFactors = TRUE,
+  colClasses = c('site_no'='factor')
+)
 
 ## -Initial Exploration-
 
@@ -38,11 +47,15 @@ Why is data exploration our first step in analyzing a dataset? What information 
 # Alternate option: click on data frame in Environment tab
 
 #View column names and the structure of the dataset
+colnames(USGS.flow.data)
+str(USGS.flow.data)
 
 # Check our date column: is it a date object?
+class(USGS.flow.data$datetime)
 
 # Change it to a date object and confirm
-
+USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format='%Y-%m-%d')
+class(USGS.flow.data$datetime)
 
 ```
 
@@ -66,24 +79,24 @@ ggplot(data = USGS.flow.data, aes(x = discharge.mean.approval)) +
 Visualize distributions of values for continuous numerical variables. What is happening in each line of code? Insert a comment above each line.
 
 ```{r, fig.height = 3, fig.width = 4}
-# 
+# Draw the basic histogram
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean))
 
-# 
+# Draw the histogram with the width/ interval of the bins with 10
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), binwidth = 10)
 
-# 
+# Draw the histogram with the bins of 20
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), bins = 20)
 
-# 
+# Draw the histogram with the x-values limited to 500
 ggplot(USGS.flow.data, aes(x = discharge.mean)) +
   geom_histogram(binwidth = 10) + 
   scale_x_continuous(limits = c(0, 500))
   
-# 
+# Draw the basic histogram of gage.height.mean variable 
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = gage.height.mean))
 
