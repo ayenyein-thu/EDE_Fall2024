@@ -154,7 +154,7 @@ ggplot(Neonics) +
 ```{r Dates}
 #Determining class and changing from factor to date of 'collectDate'
 class(Litter$collectDate)
-Litter$collectDate <- as.Date(Litter$collectDate)
+Litter$collectDate <- as.Date(Litter$collectDate, format="%y-%m-%d")
 class(Litter$collectDate)
 unique(Litter$collectDate)
 ```
