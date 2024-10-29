@@ -192,8 +192,27 @@ summary(Anova2_Temperature.Depth)
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2, message=FALSE, warning=FALSE}
-#14.
-ANOVAplot_Temperature.Depth <- ggplot(Temperature.Depth,
+#14a Scatterplot 
+ANOVAplot_Temperature.Depth1 <- ggplot(Temperature.Depth,
+                                      aes(x=depth, 
+                                          y=temperature_C,
+                                          color=lakename)) + 
+  geom_point(alpha=0.5, size=2) + 
+  geom_smooth(method="lm", se=FALSE) + 
+  ylim(0,35) + 
+  labs(
+    title="Lake Temperature by Depth in July for Each Lake",
+    x="Depth (Meter)", 
+    y=expression("Temperature ("*degree*"C)")) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face="bold"),
+    legend.text = element_text(size=7),
+    legend.title = element_text(size=8))  
+
+print(ANOVAplot_Temperature.Depth1)
+
+#14b Scatterplot using facet wrap for each lake  
+ANOVAplot_Temperature.Depth2 <- ggplot(Temperature.Depth,
                                       aes(x=depth, 
                                           y=temperature_C,
                                           color=lakename)) + 
@@ -210,7 +229,7 @@ ANOVAplot_Temperature.Depth <- ggplot(Temperature.Depth,
     legend.title = element_text(size=8)) + 
   facet_wrap(~lakename, nrow=9, ncol=3) 
 
-print(ANOVAplot_Temperature.Depth)
+print(ANOVAplot_Temperature.Depth2)
 ```
 
 15. Use the Tukey's HSD test to determine which lakes have different means.
