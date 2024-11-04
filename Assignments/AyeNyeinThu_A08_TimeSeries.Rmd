@@ -34,6 +34,7 @@ getwd()
 library(zoo)
 library(trend)
 library(tidyverse)
+library(dplyr)
 library(lubridate)
 library(here)
 
@@ -78,7 +79,6 @@ dim(Garinger.Ozone)
 ```{r wrangling data}
 #3 Set the date column as date
 Garinger.Ozone$Date <- mdy(Garinger.Ozone$Date)
-class(Garinger.Ozone$Date)
 
 #4 Wrangle the dataset to include only 3 columns
 Garinger.Ozone_Processed <- Garinger.Ozone %>% 
