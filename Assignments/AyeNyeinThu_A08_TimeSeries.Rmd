@@ -62,7 +62,7 @@ Garinger.Ozone <- list.files(path="./Data/Raw/Ozone_TimeSeries/",
 dim(Garinger.Ozone)
 
 # Note: The dataset is named 'Garinger.Ozone'. 
-# The "." is added so as not to confuse with the file name in Question 6. 
+# The "." is added so as not to confuse with the dataset name in Question 6. 
 ```
 
 ## Wrangle
@@ -78,6 +78,7 @@ dim(Garinger.Ozone)
 ```{r wrangling data}
 #3 Set the date column as date
 Garinger.Ozone$Date <- mdy(Garinger.Ozone$Date)
+class(Garinger.Ozone$Date)
 
 #4 Wrangle the dataset to include only 3 columns
 Garinger.Ozone_Processed <- Garinger.Ozone %>% 
@@ -117,7 +118,7 @@ plot <- GaringerOzone %>%
 print(plot)
 ```
 
->Answer: The plot showcases a slight decreasing trend of the daily ozone concentrations over time. However, the downward sloping fitted line is in a gradual decrease nature. Further, a high level of fluctuations in ozone concentration is pronounced in the plot. These facts suggest to further analyze the trend of ozone concentrations over time using a time series analysis and identify the decreasing trend is statistically significant. 
+>Answer: The plot showcases a slight decreasing trend of the daily ozone concentrations over time. However, the downward sloping fitted line is in a gradual decrease nature. Further, a high level of fluctuations in ozone concentration is pronounced in the plot. These facts suggest to further analyze the trend of ozone concentrations over time using a time series analysis and identify if the decreasing trend is statistically significant. 
 
 ## Time Series Analysis
 
@@ -147,8 +148,6 @@ dim(GaringerOzone_Clean)
 
 ```{r wrangling dates and generating monthly mean, message=FALSE, warning=FALSE}
 #9a Create a new data frame by adding Year and Month columns
-GaringerOzone_Clean$Date <- as.Date(GaringerOzone_Clean$Date,"%Y-%m-%d")
-
 GaringerOzone.monthly <- GaringerOzone_Clean %>% 
   mutate(Year = year(Date), Month = month(Date)) %>% 
   group_by(Year, Month) %>% 
@@ -200,7 +199,7 @@ GaringerOzone.monthly.MKtest
 summary(GaringerOzone.monthly.MKtest)
 ```
 
-> Answer: To analyze the monthly ozone concentration, the seasonal Mann-Kendall test is the most appropriate since it allows for both seasonality, non-parametric and monotonic trend in the dataset. The monthly ozone concentration time series plot in 11d suggests that there is a seasonal variation and non-parametric nature in the monthly ozone concentration dataset. Further, the results of the seasonal Mann-Kendall test indicates that there is a decreasing monotonic trend at tau value -0.143 and it is stastically significant at p-value being less than 0.05. Therefore, the seasonal Mann-Kendall is the best fit test. 
+> Answer: To analyze the monthly ozone concentration, the seasonal Mann-Kendall test is the most appropriate since it allows for both seasonality, non-parametric and monotonic trend in the dataset. The monthly ozone concentration time series plot in 11d suggests that there is a seasonal variation and non-parametric nature in the monthly ozone concentration dataset. Further, as per the results of the seasonal Mann-Kendall test, negative values in score and tau indicates that there is a decreasing monotonic trend and it is stastically significant at p-value being less than 0.05. Therefore, the seasonal Mann-Kendall is the best fit test. 
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
@@ -219,7 +218,7 @@ ggplot(GaringerOzone.monthly, aes(x=Dates, y=Monthly.Mean.Ozone)) +
 
 14. To accompany your graph, summarize your results in context of the research question. Include output from the statistical test in parentheses at the end of your sentence. Feel free to use multiple sentences in your interpretation.
 
-> Answer: The research question is to find out if the ozone concentrations changed over the 2010s at the station under study. The season Mann-Kendall test conducted in question 12 and the plot generated in question 13 exhibit the fact that ozone concentration in the studied station has a slight decreasing monotonic trend during 2010s (tau=-0.143, and p-value=0.047). The tau value at -0.143 represents a weak negative trend and it matches with the plot showcasing only a slight and not a strong pronouncing decreasing linear fitted line over time. The p-value at 0.047 rejects the null hypothesis that assumes the ozone concentration over time is stationery and suggests that a weak decreasing trend is statistically significant.  
+> Answer: The research question is to find out if the ozone concentrations changed over the 2010s at the station under study. The season Mann-Kendall test conducted in question 12 and the plot generated in question 13 exhibit the fact that ozone concentration in the studied station has a slight decreasing monotonic trend during 2010s (score=-77, tau=-0.143, and p-value=0.047). The tau value at -0.143 and score at -77 represent a weak negative or decreasing trend and it matches with the plot showcasing only a slight and not a strong pronouncing decreasing linear fitted line over time. The p-value at 0.047 rejects the null hypothesis that assumes the ozone concentration over time is stationery and suggests that a weak decreasing trend is statistically significant.  
 
 15. Subtract the seasonal component from the `GaringerOzone.monthly.ts`. Hint: Look at how we extracted the series components for the EnoDischarge on the lesson Rmd file.
 
@@ -241,4 +240,5 @@ summary(GaringerOzone.monthly.nonseasonal.MKtest)
 
 ```
 
-> Answer: When the seasonal component is subtracted and the Mann Kendall test is conducted on the non-seasonal Ozone monthly series, the result still indicates that there is a significant decreasing trend. But this time, both tau value and p-value are more pronounced than the ones using the Seasonal Mann Kendall test on the complete series. The tau value at -0.165 leans more towards the negative value and the p-value at 0.008 is stronger. 
+> Answer: When the seasonal component is subtracted and the Mann Kendall test is conducted on the non-seasonal Ozone monthly series, the result still indicates that there is a significant decreasing trend. Although values generated from the Mann Kendall test (score=-1179, tau=-0.165 and pvalue=0.0075) seem more pronounced compared to the ones from the seasonal Mann Kendall test in question 12, all the values still indicate the negative values and statistically significant. Therefore, we can conclude that apart from slight differences in magnitudes, both seasonal and non-seasonal Man Kendall tests consistently indicate that the monthly ozone concentration exhibit a decreasing trend over time at the station under study.
+
