@@ -1,0 +1,208 @@
+---
+title: "Problem Set 3"
+subtitle: "PUBPOL 741D: Empirical Analysis for Economic Development (Fall 2024)"
+author: "Aye Nyein Thu"
+output: pdf_document
+date: "2024-11-08"
+editor_options: 
+  chunk_output_type: console
+---
+
+# R setup 
+
+```{r setup, include=FALSE}
+#Loading necessary r packages
+library(tidyverse)
+library(agricolae)
+library(lubridate)
+library(corrplot)
+library(here)
+library(openxlsx)
+library(cowplot)
+
+here()
+getwd()
+
+#Importing Barro dataset
+Barro <- here("/Users/ayenyeinthu/Desktop/Duke University/1st Sem /PUBPOL 741D Empirical Analysis /Problem Sets/Problem Set 3 /Raw/Barro 1991.xlsx")
+
+Barro.1991 <- read.xlsx(Barro)
+
+#Importing ROE India dataset and sheets
+ROE.India <- here("/Users/ayenyeinthu/Desktop/Duke University/1st Sem /PUBPOL 741D Empirical Analysis /Problem Sets/Problem Set 3 /Raw/Returns to Education India.xlsx") 
+
+ROE.India_Alldata <- read.xlsx(ROE.India, sheet=1)
+ROE.India_Hindu <- read.xlsx(ROE.India, sheet=2)
+ROE.India_Muslim <- read.xlsx(ROE.India, sheet=3)
+
+#Setting default theme for plots
+mytheme <- theme_classic(base_size = 12) +
+  theme(
+    axis.text = element_text(color="black"),
+    legend.position = "top",
+    plot.title = element_text(size=14,hjust = 0.5, face = "bold")
+  )
+theme_set(mytheme)
+```
+
+# Question 1 - the Solow Model
+## Question 1(a)
+
+```{r Question 1a, message=FALSE, warning=FALSE}
+#Plot the Growth Rate vs. GDP using the Straight Linear Line
+ggplot(Barro.1991, aes(x=GDP60, y=GR6085)) + 
+  geom_point() +
+  geom_smooth(method="lm", color="blue") + 
+  labs(
+    title="Growth Rate between 1960 and 1985 Vs. GDP in 1960",
+    x="GDP in 1960",
+    y="GDP Growth Rate (1960-1985)") 
+```
+
+> Comment: When the growth rate and GDP are fitted in a linear line, it does not exhibit a clear decreasing or increasing monotonic relationship. As depicted in the plot, the data points center around both lower and higher GDP growth rate at the low GDP levels in 1960. Therefore, eyeballing data points make it difficult to conclude that countries having low GDP are growing faster than those having high GDP. 
+
+## Question 1(b)
+$ GR6085 = \beta_{1} + \beta_{2}GDP60 + \epsilon $
+Where: 
+GR6085 = Growth rate of real per capita GDP from 1960 to 1985 
+GDP60 = 1960 valueof per capita GDP
+
+```{r Question 1b}
+#Run the linear regression 
+Q1b_LM <- lm (
+  data = Barro.1991,
+  GR6085 ~ GDP60)
+summary(Q1b_LM)
+```
+
+> Comment: Acoording to the Solow Model, the expected sign of $\beta_{2}$ should be negative. However, the coefficient estimation of the linear regression model indicates a positive sign at 0.0001 and the result is not statistically significant at the 5% level. Since the p-value is smaller than 0.05, we fail to reject the null hypothesis that the coefficient of the GDP60 term is zero. The value of R-squared is small and the model can explain only 0.02% of variations in growth rate.
+
+## Question 1(c)
+$ GR6085 = \beta_{1} + \beta_{2}GDP60 + \beta_{3}SEC60 + \beta_{4}PRIM60 + \beta_{5} (g_c/y) + \beta_{6}REV+ \beta_{7}ASSASS+\beta_{8}PPI60DEV + \epsilon  $
+Where: 
+GR6085 = Growth rate of real per capita GDP from 1960 to 1985 
+GDP60 = 1960 valueof per capita GDP
+SEC60 = 1960 secondary-school enrollment rate,
+PRIM60 = 1960 primary-school enrollment rate,
+(gc/y) = average from 1970 to 1985 of the ratio of real government consumption (exclusive of defense and education) to real GDP,
+REV = number of revolutions and coups per year 1960-1985,
+ASSASS = number of assassinations per million population per year 1960-1985,
+PPI60DEV = magnitude of the deviation of 1960 PPP value for the investment deflator from the sample
+
+```{r Question 1c}
+#Run the regression with additional variables
+Q1c_LMExtended <- lm (
+  data=Barro.1991, 
+  GR6085 ~ GDP60 +
+    SEC60 + PRIM60 + gcy + REV + ASSASS + PPI60DEV)
+summary(Q1c_LMExtended)
+```
+
+> Comment: When additional explanatory variables are added to the model, the sign of $\beta_{2}$ has changed to negative and the result is statistically significant. We can reject the null hypothesis as the p-value is far less than 0.05. It suggests the fact that the GDP alone could barely determine the growth rate between 1960 and 1980. The other variables such as education, government expenditure, political and economic stability also play a role in determining the growth rate of a country. 
+
+--- 
+# Question 2 - Education and Wages: Mincer Regressions
+
+$ \ln(w) = \beta_{0} + \beta_{1}s + \beta_{2}x + \beta_{3}x^2 $
+Where:
+$ \ln(w) $ = Log of Wages 
+s = Years of Schooling 
+x = Years of Experience 
+
+## Question 2a 
+```{r Question 2a}
+#Compute the average wage for Hindus 
+mean(ROE.India_Hindu$MONTHLY.WAGES)
+
+#Compute the average wage for Muslims
+mean(ROE.India_Muslim$MONTHLY.WAGES)
+
+#Compute the differences of average wages for Hindus and Muslims
+mean(ROE.India_Hindu$MONTHLY.WAGES) - mean(ROE.India_Muslim$MONTHLY.WAGES)
+```
+
+> Comment: On average, the Hindus in India are well-paid than the Muslims in India. The average monthly wages of Hindus is 2,592.16 units higher than that of Muslims. 
+
+## Question 2b 
+$ \ln(w) = \beta_{0} + \beta_{1}s $
+$ (d/ds) (ln(w)) = (d/ds) \beta_{0} + (d/ds) \beta_{1}s $
+$ (d/ds) (ln(w)) = 0 + \beta_{1} $
+$ (d/ds) (ln(w)) = 0 + \beta_{1} * 100 $
+$ (d/ds) (ln(w)) = \beta_{1} * 100 $
+
+> Comment: The derivative of ln(w) with respect to 's' represents the percentage change in wages for one additional year of schooling and it is equal to $ \beta_{1} * 100 $. 
+
+## Question 2c 
+```{r Question 2c}
+#Run the linear regression of Wages and Schooling in Hindu  
+Q2c_Hin_ROEvsS <- lm(
+  data = ROE.India_Hindu,
+  log(MONTHLY.WAGES) ~ YEARS.OF.SCHOOLING
+)
+summary(Q2c_Hin_ROEvsS)
+
+#Run the linear regression of Wages and Schooling in Muslim 
+Q2c_Mus_ROEvsS <- lm(
+  data = ROE.India_Muslim,
+  log(MONTHLY.WAGES) ~ YEARS.OF.SCHOOLING
+)
+summary(Q2c_Mus_ROEvsS)
+
+#Differences in wages
+Hin_ROE <- 0.0842541*100
+Hin_ROE
+
+Mus_ROE <- 0.05707*100
+Mus_ROE
+
+Differences <- Hin_ROE - Mus_ROE
+Differences
+```
+
+> Comment: While the returns of one additional years of schooling for Hindus is 8.43%, it goes down to 5.71% for Muslims. Both of the results are statistically significant for the p-values being smaller than 0.05 while the R-squared values are small. The models suggest the existence of inequality in returns of schooling between Hindus and Muslims by approximately 2.72%. However, the models consider only one explanatory variable, which is years of schooling, to explain the differences in wages between Hindus and Muslims and there might be other independent variables that can hold strong explanatory power. 
+
+## Question 2d
+$ \ln(w) = \beta_{0} + \beta_{1}s + \beta_{2}x $
+
+```{r Question 2d}
+#Run the linear regression of Wages, Schooling and Experiences in Hindu  
+Q2d_Hin_ROEvsSE <- lm(
+  data = ROE.India_Hindu,
+  log(MONTHLY.WAGES) ~ YEARS.OF.SCHOOLING + EXPERIENCE
+)
+summary(Q2d_Hin_ROEvsSE)
+
+#Run the linear regression of Wages, Schooling and Experiences in Muslim 
+Q2d_Mus_ROEvsSE <- lm(
+  data = ROE.India_Muslim,
+  log(MONTHLY.WAGES) ~ YEARS.OF.SCHOOLING + EXPERIENCE
+)
+summary(Q2d_Mus_ROEvsSE)
+
+#Differences in wages
+Hin_ROEE <- 0.0894793*100
+Hin_ROEE
+
+Mus_ROEE <- 0.0672812*100
+Mus_ROEE
+
+Differences <- Hin_ROEE - Mus_ROEE
+Differences
+```
+
+> Comment: When the years of experience is added to the equations, the differences in wages between Hindus and Muslims are still pronounced. The return to an additional years of experience for Hindus is 1.07% and that for Muslims is 1.28%. There is not much differences in wages due to experiences. However, the returns to schooling for Hindus is 8.95% and that for Muslims is 6.73%. Therefore, the differences in wages still persists even if the years of experiences are added. The results are statistically significant. Hence, it could be concluded that it is more likely to exist the discrimiation in wages between Hindus and Muslims population and Hindus are earning approximately 2.22% higher than Muslims for an increase in every additional one year of schooling. 
+
+## Question 2e
+$ \ln(w) = \beta_{0} + \beta_{1}s + \beta_{2}x + \beta_{3}x^2 $
+
+```{r Question 2e}
+#Run the linear regression of Wages, Schooling and Experiences in India  
+Q2e_India <- lm(
+  data = ROE.India_Alldata,
+  log(MONTHLY.WAGES) ~ YEARS.OF.SCHOOLING + EXPERIENCE + I(EXPERIENCE^2)  
+)
+options(scipen = 5) 
+summary(Q2e_India)
+```
+
+> Comment: When the full Mincer regression runs, all the coefficients for years of schooling, experience, and square experience are statistically significant at 95% level. The returns of one additional year of schooling in India is approximately 8.84%, meaning that one year increase in schooling raises 8.84% of monthly wages in India. The returns of one additional year of experience also increase wage by 4.29%. The coefficient for square term of experience is negative and it indicates that the wages will be increasing as years of experiences accumulate over time, however, when the retirement is closer, it is more likely that wages in India will be diminishing. 
