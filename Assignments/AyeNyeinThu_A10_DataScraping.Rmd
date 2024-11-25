@@ -114,7 +114,8 @@ Durham_2023 <-  data.frame(
                        levels=month.abb),
          Ownership=!!Ownership,
          PWSID=!!PWSID,
-         Date = my(paste(Month,"-",Year)))
+         Date = my(paste(Month,"-",Year))) %>% 
+  arrange(Month)
 
 #5 Line Plot of the maximum daily withdrawls in 2023
 ggplot(data = Durham_2023,
@@ -173,7 +174,8 @@ LWSP.scrape <- function(the_pwsid,the_year){
                        levels=month.abb),
     Ownership=!!Ownership_scr,
          PWSID=!!PWSID_scr,
-         Date = my(paste(Month,"-",Year))) 
+         Date = my(paste(Month,"-",Year))) %>% 
+    arrange (Month)
     
   #Pause for a moment as per the scraping etiquette 
   Sys.sleep(1) 
@@ -220,8 +222,8 @@ Durham.Ashville_2015 <- bind_rows(Durham_2015,Asheville_2015) %>%
 
 #8c Plot 
 ggplot(Durham.Ashville_2015, aes(x = Date, y = Max_DayUse, color = County)) +
-  geom_line() +              
-  geom_smooth(method = "loess", se = FALSE, linetype = "dashed") + 
+  #geom_line() +              
+  geom_smooth(method = "loess", se = FALSE) + 
   labs(title = "Comparison of Maximum Daily Water Withdrawals by Months (2015)",
        subtitle = "Durham Vs. Asheville",
        y = "Max Daily Withdrawal (MGD)",
@@ -238,7 +240,7 @@ ggplot(Durham.Ashville_2015, aes(x = Date, y = Max_DayUse, color = County)) +
 > TIP: See Section 3.2 in the "10_Data_Scraping.Rmd" where we apply "map2()" to iteratively run a function over two inputs. Pipe the output of the map2() function to `bindrows()` to combine the dataframes into a single one. 
 
 ```{r fetch.and.plot.Asheville.multiyear.data, warning=F, message=F}
-#9a Fetch Asheville and 2018 through 2022 values from the functio
+#9a Fetch Asheville and 2018 through 2022 values from the function
 years <- 2018:2022
 
 Asheville_18.22 <- map2_dfr(
